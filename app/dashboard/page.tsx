@@ -1,3 +1,5 @@
+import mqtt from "mqtt";
+
 export default function Dashboard() {
     const data = {
         rpm: 3200,
@@ -6,6 +8,32 @@ export default function Dashboard() {
         gear: 3,
         brakePressure: 12.5, // bar (example)
     };
+
+    const client = mqtt.connect("wss://36fb9291221e425d953221c0e7547685.s1.eu.hivemq.cloud:8884/mqtt", {
+        username: "mpiskawe",
+        password: "Mpiskawe123"
+    });
+
+    client.on("connect", () => {
+    console.log("Connected!");
+    client.subscribe("vehicle", (err) => {
+        if (!err) {
+        console.log("📡 Subscribed to vehicle");
+        client.publish("vehicle", "Hello from Node.js via HiveMQ Cloud");
+        } else {
+        console.error("Subscribe error:", err);
+        }
+    });
+    });
+
+
+    client.on("message", (topic, message) => {
+    console.log(message.toString());
+    });
+    client.on("error", (err) => {
+        console.error("Connection error: ", err);
+    });
+
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center">
