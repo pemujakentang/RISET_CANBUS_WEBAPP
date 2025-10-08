@@ -1,4 +1,5 @@
 import mqtt from "mqtt";
+import ParameterCard from "../components/ParameterCard";
 
 export default function Dashboard() {
     const data = {
@@ -36,34 +37,15 @@ export default function Dashboard() {
 
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center">
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center p-10">
             <h1 className="text-3xl font-bold mb-8">Vehicle Dashboard</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-                <div className="bg-white shadow-md rounded-2xl p-6 text-center">
-                    <h2 className="text-xl font-semibold">RPM (0x1DC)</h2>
-                    <p className="text-3xl font-bold text-blue-600">{data.rpm}</p>
-                </div>
-
-                <div className="bg-white shadow-md rounded-2xl p-6 text-center">
-                    <h2 className="text-xl font-semibold">Speed (0x158)</h2>
-                    <p className="text-3xl font-bold text-green-600">{data.speed} km/h</p>
-                </div>
-
-                <div className="bg-white shadow-md rounded-2xl p-6 text-center">
-                    <h2 className="text-xl font-semibold">Throttle Position (0x17C)</h2>
-                    <p className="text-3xl font-bold text-orange-600">{data.throttle}%</p>
-                </div>
-
-                <div className="bg-white shadow-md rounded-2xl p-6 text-center">
-                    <h2 className="text-xl font-semibold">Gear Position (0x191)</h2>
-                    <p className="text-3xl font-bold text-purple-600">{data.gear}</p>
-                </div>
-
-                <div className="bg-white shadow-md rounded-2xl p-6 text-center">
-                    <h2 className="text-xl font-semibold">Brake Pressure (0x1A4)</h2>
-                    <p className="text-3xl font-bold text-red-600">{data.brakePressure} bar</p>
-                </div>
+                <ParameterCard name="RPM (0x1DC)" value={data.rpm} color="text-blue-600" link="/dashboard/rpm" />
+                <ParameterCard name="Speed (0x158)" value={data.speed} unit="km/h" color="text-green-600" link="/dashboard/speed" />
+                <ParameterCard name="Throttle (0x17C)" value={data.throttle} unit="%" color="text-orange-600" link="/dashboard/throttle" />
+                <ParameterCard name="Gear (0x191)" value={data.gear} color="text-purple-600" link="/dashboard/gear" />
+                <ParameterCard name="Brake Pressure (0x1A4)" value={data.brakePressure} unit="bar" color="text-red-600" link="/dashboard/brake" />
             </div>
         </div>
     );
