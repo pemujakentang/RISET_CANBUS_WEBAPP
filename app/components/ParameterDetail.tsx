@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { ChartOptions, Chart } from "chart.js";
+import { getLatestData, subscribeToData } from "@/lib/mqtt";
 
 import "chart.js/auto";
 
@@ -10,33 +11,43 @@ interface ParameterDetailProps {
     name: string;
     unit: string;
     color: string;
+    parameterKey?: "rpm" | "speed" | "throttle" | "gear" | "brakePressure" | "waterTemp" | "oilTemp";
 }
 
-export default function ParameterDetail({ name, unit, color }: ParameterDetailProps) {
+export default function ParameterDetail({ name, unit, color, parameterKey = "rpm" }: ParameterDetailProps) {
     const [value, setValue] = useState(0);
     const [dataPoints, setDataPoints] = useState<number[]>([]);
     const [timestamps, setTimestamps] = useState<string[]>([]);
     const chartRef = useRef<Chart<"line">>(null);
 
-    // simulate live incoming data
+    // Use real MQTT data instead of random simulation
     useEffect(() => {
-        const interval = setInterval(() => {
-            const newValue = Math.floor(Math.random() * 100);
-            setValue(newValue);
+        // Get initial data
+        const initialData = getLatestData();
+        if (initialData[parameterKey] !== undefined) {
+            setValue(initialData[parameterKey]!);
+        }
 
-            setDataPoints((prev) => {
-                const updated = [...prev, newValue];
-                return updated.length > 20 ? updated.slice(1) : updated;
-            });
+        // Subscribe to real-time MQTT updates
+        const unsubscribe = subscribeToData((mqttData) => {
+            if (mqttData[parameterKey] !== undefined) {
+                const newValue = mqttData[parameterKey]!;
+                setValue(newValue);
 
-            setTimestamps((prev) => {
-                const updated = [...prev, new Date().toLocaleTimeString()];
-                return updated.length > 20 ? updated.slice(1) : updated;
-            });
-        }, 1000);
+                setDataPoints((prev) => {
+                    const updated = [...prev, newValue];
+                    return updated.length > 20 ? updated.slice(1) : updated;
+                });
 
-        return () => clearInterval(interval);
-    }, []);
+                setTimestamps((prev) => {
+                    const updated = [...prev, new Date().toLocaleTimeString()];
+                    return updated.length > 20 ? updated.slice(1) : updated;
+                });
+            }
+        });
+
+        return unsubscribe;
+    }, [parameterKey]);
 
     // dummy historical data
     const history = [

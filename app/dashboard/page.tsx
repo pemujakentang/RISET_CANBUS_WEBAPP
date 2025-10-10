@@ -1,41 +1,38 @@
-import mqtt from "mqtt";
+"use client";
+
+import { useEffect, useState } from "react";
 import ParameterCard from "../components/ParameterCard";
+import { getLatestData, subscribeToData } from "@/lib/mqtt";
 
 export default function Dashboard() {
-    const data = {
-        rpm: 3200,
-        speed: 72,
-        throttle: 40,
-        gear: 3,
-        brakePressure: 12.5, // bar (example)
-        waterTemp: 90, // Celsius (example)
-        oilTemp: 85, // Celsius (example)
-    };
-
-    const client = mqtt.connect("wss://36fb9291221e425d953221c0e7547685.s1.eu.hivemq.cloud:8884/mqtt", {
-        username: "mpiskawe",
-        password: "Mpiskawe123"
+    const [data, setData] = useState({
+        rpm: 0,
+        speed: 0,
+        throttle: 0,
+        gear: 0,
+        brakePressure: 0,
+        waterTemp: 0,
+        oilTemp: 0,
     });
 
-    client.on("connect", () => {
-    console.log("Connected!");
-    client.subscribe("vehicle", (err) => {
-        if (!err) {
-        console.log("📡 Subscribed to vehicle");
-        client.publish("vehicle", "Hello from Node.js via HiveMQ Cloud");
-        } else {
-        console.error("Subscribe error:", err);
-        }
-    });
-    });
+    useEffect(() => {
+        // Get initial data
+        const initialData = getLatestData();
+        setData(prevData => ({
+            ...prevData,
+            ...initialData
+        }));
 
+        // Subscribe to real-time updates
+        const unsubscribe = subscribeToData((mqttData) => {
+            setData(prevData => ({
+                ...prevData,
+                ...mqttData
+            }));
+        });
 
-    client.on("message", (topic, message) => {
-    console.log(message.toString());
-    });
-    client.on("error", (err) => {
-        console.error("Connection error: ", err);
-    });
+        return unsubscribe;
+    }, []);
 
 
     return (
