@@ -8,6 +8,8 @@ export default function Dashboard() {
         throttle: 40,
         gear: 3,
         brakePressure: 12.5, // bar (example)
+        waterTemp: 90, // Celsius (example)
+        oilTemp: 85, // Celsius (example)
     };
 
     const client = mqtt.connect("wss://36fb9291221e425d953221c0e7547685.s1.eu.hivemq.cloud:8884/mqtt", {
@@ -46,6 +48,8 @@ export default function Dashboard() {
                 <ParameterCard name="Throttle (0x17C)" value={data.throttle} unit="%" color="text-orange-600" link="/dashboard/throttle" />
                 <ParameterCard name="Gear (0x191)" value={data.gear} color="text-purple-600" link="/dashboard/gear" />
                 <ParameterCard name="Brake Pressure (0x1A4)" value={data.brakePressure} unit="bar" color="text-red-600" link="/dashboard/brake" />
+                <ParameterCard name="Water Temp" value={data.waterTemp} unit="°C" color="text-cyan-400" link="/dashboard/water-temp" />
+                <ParameterCard name="Oil Temp" value={data.oilTemp} unit="°C" color="text-yellow-400" link="/dashboard/oil-temp" />
             </div>
         </div>
     );
