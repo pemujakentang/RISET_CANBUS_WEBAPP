@@ -39,6 +39,12 @@ client.on("connect", () => {
   client.subscribe("esp32mqtt/vehicle/throttle", (err) => {
     if (!err) console.log("📡 Subscribed to esp32mqtt/vehicle/throttle");
   });
+  client.subscribe("esp32mqtt/vehicle/gear", (err) => {
+    if (!err) console.log("📡 Subscribed to esp32mqtt/vehicle/gear");
+  });
+  client.subscribe("esp32mqtt/vehicle/brake", (err) => {
+    if (!err) console.log("📡 Subscribed to esp32mqtt/vehicle/brake");
+  });
 });
 
 client.on("message", (topic, message) => {
@@ -55,6 +61,12 @@ client.on("message", (topic, message) => {
         break;
       case "esp32mqtt/vehicle/throttle":
         latestData.throttle = value;
+        break;
+      case "esp32mqtt/vehicle/gear":
+        latestData.gear = value;
+        break;
+      case "esp32mqtt/vehicle/brake":
+        latestData.brakePressure = value;
         break;
       default:
         console.log(`Unknown topic: ${topic}`);
