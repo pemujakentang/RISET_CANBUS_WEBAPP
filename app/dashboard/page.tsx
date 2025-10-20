@@ -10,7 +10,7 @@ export default function Dashboard() {
         speed: 0,
         throttle: 0,
         gear: 0,
-        brakePressure: 0,
+        brake: 0,
         waterTemp: 0,
         oilTemp: 0,
     });
@@ -44,7 +44,7 @@ export default function Dashboard() {
                 <ParameterCard name="Speed (0x158)" value={data.speed} unit="km/h" color="text-green-600" link="/dashboard/speed" />
                 <ParameterCard name="Throttle (0x17C)" value={data.throttle} unit="%" color="text-orange-600" link="/dashboard/throttle" />
                 <ParameterCard name="Gear (0x191)" value={data.gear} color="text-purple-600" link="/dashboard/gear" />
-                <ParameterCard name="Brake Pressure (0x1A4)" value={data.brakePressure} unit="bar" color="text-red-600" link="/dashboard/brake" />
+                <ParameterCard name="Brake Pressure (0x1A4)" value={data.brake} unit="bar" color="text-red-600" link="/dashboard/brake" />
                 <ParameterCard name="Water Temp" value={data.waterTemp} unit="°C" color="text-cyan-400" link="/dashboard/water-temp" />
                 <ParameterCard name="Oil Temp" value={data.oilTemp} unit="°C" color="text-yellow-400" link="/dashboard/oil-temp" />
             </div>

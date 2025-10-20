@@ -1,97 +1,74 @@
 import mqtt from "mqtt";
 
-// MQTT broker connection using the credentials from dashboard
+// Connect to EMQX broker over secure WebSocket
 const client = mqtt.connect("wss://qd199cd1.ala.asia-southeast1.emqxsl.com:8084/mqtt", {
-    username: "WebMonitor",
-    password: "WebMonitor"
+  username: "WebMonitor",
+  password: "WebMonitor",
 });
 
-const latestData: {
+// Define the data structure you expect from the ESP32
+export interface VehicleData {
   rpm?: number;
   speed?: number;
   throttle?: number;
   gear?: number;
-  brakePressure?: number;
-  waterTemp?: number;
-  oilTemp?: number;
-} = {};
+  brake?: number;
+}
 
-// Callbacks for real-time data updates
-const dataCallbacks: ((data: typeof latestData) => void)[] = [];
+// Store latest data received from MQTT
+let latestData: VehicleData = {};
 
+// List of frontend callbacks to notify when new data arrives
+const dataCallbacks: ((data: VehicleData) => void)[] = [];
+
+// Connection events
 client.on("connect", () => {
   console.log("📡 MQTT Connected!");
-  
-  // Subscribe to ESP32 topics
-  client.subscribe("esp32mqtt/vehicle/rpm", (err) => {
+
+  // Subscribe to single topic for all vehicle data
+  client.subscribe("esp32mqtt/vehicle", (err) => {
     if (!err) {
-      console.log("📡 Subscribed to esp32mqtt/vehicle/rpm");
+      console.log("📡 Subscribed to esp32mqtt/vehicle");
     } else {
-      console.error("Subscribe error:", err);
+      console.error("❌ Subscribe error:", err);
     }
-  });
-  
-  // Subscribe to other vehicle topics for future use
-  client.subscribe("esp32mqtt/vehicle/speed", (err) => {
-    if (!err) console.log("📡 Subscribed to esp32mqtt/vehicle/speed");
-  });
-  
-  client.subscribe("esp32mqtt/vehicle/throttle", (err) => {
-    if (!err) console.log("📡 Subscribed to esp32mqtt/vehicle/throttle");
-  });
-  client.subscribe("esp32mqtt/vehicle/gear", (err) => {
-    if (!err) console.log("📡 Subscribed to esp32mqtt/vehicle/gear");
-  });
-  client.subscribe("esp32mqtt/vehicle/brake", (err) => {
-    if (!err) console.log("📡 Subscribed to esp32mqtt/vehicle/brake");
   });
 });
 
 client.on("message", (topic, message) => {
+  if (topic !== "esp32mqtt/vehicle") return;
+
   try {
-    const value = parseFloat(message.toString());
-    
-    // Update the appropriate field based on topic
-    switch (topic) {
-      case "esp32mqtt/vehicle/rpm":
-        latestData.rpm = value;
-        break;
-      case "esp32mqtt/vehicle/speed":
-        latestData.speed = value;
-        break;
-      case "esp32mqtt/vehicle/throttle":
-        latestData.throttle = value;
-        break;
-      case "esp32mqtt/vehicle/gear":
-        latestData.gear = value;
-        break;
-      case "esp32mqtt/vehicle/brake":
-        latestData.brakePressure = value;
-        break;
-      default:
-        console.log(`Unknown topic: ${topic}`);
-    }
-    
-    // Notify all subscribers about data update
-    dataCallbacks.forEach(callback => callback(latestData));
-    
+    // Parse JSON message from ESP32
+    const data = JSON.parse(message.toString()) as VehicleData;
+
+    // Merge with latest data (in case some fields are missing)
+    latestData = { ...latestData, ...data };
+
+    // Notify all subscribers (e.g., UI components)
+    dataCallbacks.forEach((callback) => callback(latestData));
+
+    // Debug log
+    console.log("📨 Received Vehicle Data:", latestData);
   } catch (err) {
-    console.error("MQTT message error:", err);
+    console.error("❌ Failed to parse MQTT JSON:", err);
+    console.log("Raw message:", message.toString());
   }
 });
 
 client.on("error", (err) => {
-  console.error("MQTT Connection error:", err);
+  console.error("❌ MQTT Connection error:", err);
 });
 
+// Export helper functions for React components
 export function getLatestData() {
   return latestData;
 }
 
-export function subscribeToData(callback: (data: typeof latestData) => void) {
+export function subscribeToData(callback: (data: VehicleData) => void) {
   dataCallbacks.push(callback);
-  
-  // Return unsubscribe function
+
+  // Return unsubscribe function for cleanup
   return () => {
     const index = dataCallbacks.indexOf(callback);
     if (index > -1) {
