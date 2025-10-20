@@ -11,7 +11,7 @@ interface ParameterDetailProps {
     name: string;
     unit: string;
     color: string;
-    parameterKey?: "rpm" | "speed" | "throttle" | "gear" | "brakePressure" | "waterTemp" | "oilTemp";
+    parameterKey?: "rpm" | "speed" | "throttle" | "gear" | "brake";
 }
 
 export default function ParameterDetail({ name, unit, color, parameterKey = "rpm" }: ParameterDetailProps) {
