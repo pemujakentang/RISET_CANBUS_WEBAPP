@@ -14,6 +14,7 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
+import { getLatestData, subscribeToData } from "@/lib/mqtt"; // ✅ import live data functions
 
 ChartJS.register(
     LineElement,
@@ -27,14 +28,7 @@ ChartJS.register(
 );
 
 // Gear labels
-const GEAR_LABELS = ["P", "R", "N", "D", "L"];
-
-// Dummy historical data
-const dummyHistory = [
-    { date: "2025-10-07", P: 3600, R: 420, N: 180, D: 7200, L: 0 },
-    { date: "2025-10-08", P: 4000, R: 600, N: 300, D: 6500, L: 100 },
-    { date: "2025-10-09", P: 3700, R: 500, N: 240, D: 7000, L: 0 },
-];
+const GEAR_LABELS = ["P", "R", "N", "D", "S", "L", "T"];
 
 export default function GearDetail() {
     const [gear, setGear] = useState("P");
@@ -42,21 +36,32 @@ export default function GearDetail() {
     const [gearValues, setGearValues] = useState<number[]>([]);
     const chartRef = useRef<Chart<"line"> | null>(null);
 
-    // Simulate live gear updates
+    // ✅ Use live MQTT data
     useEffect(() => {
-        const interval = setInterval(() => {
-            const newGear = GEAR_LABELS[Math.floor(Math.random() * GEAR_LABELS.length)];
+        // Get latest known data
+        const latest = getLatestData();
+        if (latest?.gear !== undefined) {
             const now = new Date().toLocaleTimeString();
-
-            setGear(newGear);
+            setGear(GEAR_LABELS[latest.gear] ?? "Unknown");
             setTimestamps((prev) => [...prev.slice(-19), now]);
-            setGearValues((prev) => [...prev.slice(-19), GEAR_LABELS.indexOf(newGear)]);
-        }, 1000);
+            setGearValues((prev) => [...prev.slice(-19), Number(latest.gear)]);
+        }
 
-        return () => clearInterval(interval);
+
+        // Subscribe to real-time updates
+        const unsubscribe = subscribeToData((mqttData) => {
+            if (mqttData.gear !== undefined) {
+                const now = new Date().toLocaleTimeString();
+                setGear(GEAR_LABELS[mqttData.gear] ?? "Unknown");
+                setTimestamps((prev) => [...prev.slice(-19), now]);
+                setGearValues((prev) => [...prev.slice(-19), Number(mqttData.gear)]);
+            }
+        });
+
+        return unsubscribe;
     }, []);
 
-    // Gear over time graph
+    // ✅ Line chart (live gear over time)
     const lineData = {
         labels: timestamps,
         datasets: [
@@ -67,7 +72,7 @@ export default function GearDetail() {
                 backgroundColor: "rgba(124, 58, 237, 0.3)",
                 fill: true,
                 stepped: true,
-                tension: 0, // digital step-like movement
+                tension: 0,
             },
         ],
     };
@@ -78,15 +83,10 @@ export default function GearDetail() {
         scales: {
             y: {
                 ticks: {
-                    // callback signature compatible with chart.js v4 typings:
-                    // (this: Scale, tickValue: string | number, index: number, ticks: Tick[]) => ...
                     callback: function (
                         this: unknown,
-                        tickValue: string | number,
-                        _index: number,
-                        _ticks: unknown[]
+                        tickValue: string | number
                     ): string | number {
-                        // tickValue can be string or number — coerce to number safely
                         const n = typeof tickValue === "string" ? Number(tickValue) : tickValue;
                         const idx = Number(n);
                         return Number.isFinite(idx) ? GEAR_LABELS[idx] ?? "" : "";
@@ -94,7 +94,7 @@ export default function GearDetail() {
                     stepSize: 1,
                 },
                 min: 0,
-                max: 4,
+                max: GEAR_LABELS.length - 1,
             },
         },
         plugins: {
@@ -102,15 +102,21 @@ export default function GearDetail() {
         },
     };
 
-    // Cumulative gear times (dummy in seconds)
+    // ✅ Dummy static historical data (until you have DB)
+    const dummyHistory = [
+        { date: "2025-10-07", P: 3600, R: 420, N: 180, D: 7200, L: 0 },
+        { date: "2025-10-08", P: 4000, R: 600, N: 300, D: 6500, L: 100 },
+        { date: "2025-10-09", P: 3700, R: 500, N: 240, D: 7000, L: 0 },
+    ];
+
     const totalTimes = { P: 11300, R: 1520, N: 720, D: 20700, L: 100 };
 
     const totalBarData = {
-        labels: GEAR_LABELS,
+        labels: Object.keys(totalTimes),
         datasets: [
             {
                 label: "Total Time (seconds)",
-                data: GEAR_LABELS.map((g) => totalTimes[g as keyof typeof totalTimes]),
+                data: Object.values(totalTimes),
                 backgroundColor: "#4f46e5",
             },
         ],
@@ -118,17 +124,19 @@ export default function GearDetail() {
 
     const dailyBarData = {
         labels: dummyHistory.map((d) => d.date),
-        datasets: GEAR_LABELS.map((gearLabel, idx) => ({
-            label: gearLabel,
-            data: dummyHistory.map((d) => d[gearLabel as keyof typeof d]),
-            backgroundColor: [
-                "#4f46e5",
-                "#16a34a",
-                "#f97316",
-                "#06b6d4",
-                "#dc2626",
-            ][idx],
-        })),
+        datasets: Object.keys(dummyHistory[0])
+            .filter((key) => key !== "date")
+            .map((gearLabel, idx) => ({
+                label: gearLabel,
+                data: dummyHistory.map((d) => d[gearLabel as keyof typeof d]),
+                backgroundColor: [
+                    "#4f46e5",
+                    "#16a34a",
+                    "#f97316",
+                    "#06b6d4",
+                    "#dc2626",
+                ][idx % 5],
+            })),
     };
 
     return (
@@ -145,7 +153,7 @@ export default function GearDetail() {
                 </p>
             </div>
 
-            {/* Live Graph */}
+            {/* Live Gear Graph */}
             <div className="w-full max-w-4xl bg-white p-6 rounded-2xl shadow-md mb-10">
                 <h2 className="text-xl font-semibold mb-4 text-gray-700">
                     Gear Movement (Live)
@@ -166,7 +174,13 @@ export default function GearDetail() {
                 <h2 className="text-xl font-semibold mb-4 text-gray-700">
                     Daily Gear Usage (Seconds)
                 </h2>
-                <Bar data={dailyBarData} options={{ responsive: true, plugins: { legend: { position: "bottom" } } }} />
+                <Bar
+                    data={dailyBarData}
+                    options={{
+                        responsive: true,
+                        plugins: { legend: { position: "bottom" } },
+                    }}
+                />
             </div>
         </div>
     );

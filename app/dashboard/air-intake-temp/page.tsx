@@ -13,6 +13,7 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
+import { getLatestData, subscribeToData } from "@/lib/mqtt";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
 
@@ -22,8 +23,8 @@ type HistoryEntry = {
   peak: number;
 };
 
-export default function OilTempPage() {
-  const [currentTemp, setCurrentTemp] = useState(85); // °C
+export default function AirIntakeTempPage() {
+  const [currentTemp, setCurrentTemp] = useState(0);
   const [dataPoints, setDataPoints] = useState<number[]>([]);
   const [timestamps, setTimestamps] = useState<string[]>([]);
   const [todayAvg, setTodayAvg] = useState(0);
@@ -31,43 +32,51 @@ export default function OilTempPage() {
 
   const chartRef = useRef<ChartJS<"line"> | null>(null);
 
-  // dummy historical data
   const [history, setHistory] = useState<HistoryEntry[]>([
-    { date: "2025-10-05", avg: 84, peak: 93 },
-    { date: "2025-10-06", avg: 85, peak: 95 },
-    { date: "2025-10-07", avg: 86, peak: 97 },
-    { date: "2025-10-08", avg: 83, peak: 92 },
+    { date: "2025-10-05", avg: 44, peak: 52 },
+    { date: "2025-10-06", avg: 46, peak: 53 },
+    { date: "2025-10-07", avg: 45, peak: 51 },
+    { date: "2025-10-08", avg: 47, peak: 54 },
   ]);
 
-  // simulate live updates every second
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTemp((prev) => {
-        const newVal = Math.max(70, Math.min(100, prev + (Math.random() * 4 - 2)));
-        const t = new Date().toLocaleTimeString("en-GB", { hour12: false });
-        setDataPoints((d) => [...d.slice(-49), newVal]);
-        setTimestamps((tms) => [...tms.slice(-49), t]);
+    // Get initial data
+    const initial = getLatestData();
+    if (initial?.airIntakeTemp !== undefined) {
+      setCurrentTemp(initial.airIntakeTemp);
+      setDataPoints([initial.airIntakeTemp]);
+      setTimestamps([new Date().toLocaleTimeString("en-GB", { hour12: false })]);
+    }
 
-        // compute new daily stats
+    // Subscribe to live MQTT updates
+    const unsubscribe = subscribeToData((mqttData) => {
+      if (mqttData.airIntakeTemp !== undefined) {
+        const newVal = mqttData.airIntakeTemp;
+        const now = new Date().toLocaleTimeString("en-GB", { hour12: false });
+
+        setCurrentTemp(newVal);
+        setDataPoints((prev) => [...prev.slice(-49), newVal]);
+        setTimestamps((prev) => [...prev.slice(-49), now]);
+
         const all = [...dataPoints, newVal];
         const avg = all.reduce((a, b) => a + b, 0) / all.length;
         const peak = Math.max(...all);
         setTodayAvg(avg);
         setTodayPeak(peak);
-        return newVal;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
+      }
+    });
+
+    return unsubscribe;
   }, [dataPoints]);
 
   const lineData = {
     labels: timestamps,
     datasets: [
       {
-        label: "Oil Temperature (°C)",
+        label: "Air Intake Temperature (°C)",
         data: dataPoints,
-        borderColor: "rgb(255, 150, 150)",
-        backgroundColor: "rgba(200, 100, 100, 0.3)",
+        borderColor: "rgb(255, 206, 86)",
+        backgroundColor: "rgba(255, 206, 86, 0.3)",
         tension: 0.3,
         fill: true,
         pointRadius: 0,
@@ -79,7 +88,7 @@ export default function OilTempPage() {
     responsive: true,
     animation: false,
     scales: {
-      y: { beginAtZero: false, min: 60, max: 110 },
+      y: { beginAtZero: false },
       x: { ticks: { display: false } },
     },
     plugins: { legend: { display: false } },
@@ -87,21 +96,18 @@ export default function OilTempPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold mb-6">Oil Temperature</h1>
+      <h1 className="text-3xl font-bold mb-6">Air Intake Temperature</h1>
 
-      {/* Current Temperature */}
       <div className="bg-white shadow-lg rounded-2xl p-8 mb-8 text-center w-full max-w-lg">
         <h2 className="text-xl font-semibold text-gray-600 mb-2">Current Temperature</h2>
         <p className="text-6xl font-bold text-yellow-600">{currentTemp.toFixed(1)}°C</p>
       </div>
 
-      {/* Live Graph */}
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-5xl mb-8">
         <h2 className="text-lg font-semibold mb-3">Temperature Over Time</h2>
         <Line ref={chartRef} data={lineData} options={options} />
       </div>
 
-      {/* Today Stats */}
       <div className="grid grid-cols-2 gap-6 w-full max-w-3xl mb-8">
         <div className="bg-white shadow-md rounded-2xl p-6 text-center">
           <h2 className="text-xl font-semibold text-gray-600">Average Temp (Today)</h2>
@@ -113,7 +119,6 @@ export default function OilTempPage() {
         </div>
       </div>
 
-      {/* Historical Table */}
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-4xl">
         <h2 className="text-lg font-semibold mb-4">Historical Data</h2>
         <table className="w-full text-center border-collapse">

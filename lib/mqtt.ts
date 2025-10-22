@@ -13,6 +13,13 @@ export interface VehicleData {
   throttle?: number;
   gear?: number;
   brake?: number;
+
+  maybeVoltage?: number;
+  maybeOdo?: number;
+  maybeOdo1?: number;
+
+  engineCoolantTemp?: number;
+  airIntakeTemp?: number;
 }
 
 // Store latest data received from MQTT
