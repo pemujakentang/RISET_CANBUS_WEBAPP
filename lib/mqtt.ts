@@ -1,85 +1,120 @@
 import mqtt from "mqtt";
 
-// Connect to EMQX broker over secure WebSocket
-const client = mqtt.connect("wss://qd199cd1.ala.asia-southeast1.emqxsl.com:8084/mqtt", {
+// === MQTT Connection Configuration ===
+const client = mqtt.connect("mqtt://localhost:1883", {
   username: "WebMonitor",
   password: "WebMonitor",
 });
 
-// Define the data structure you expect from the ESP32
+// === Topic Definitions ===
+const TOPIC_VEHICLE = "esp32mqtt/vehicle";
+const TOPIC_FE_REQ = "esp32mqtt/handshake/fe/request";
+const TOPIC_FE_RES = "esp32mqtt/handshake/fe/response";
+
+// === Data Types ===
 export interface VehicleData {
   rpm?: number;
   speed?: number;
   throttle?: number;
   gear?: number;
   brake?: number;
-
   maybeVoltage?: number;
   maybeOdo?: number;
   maybeOdo1?: number;
-
   engineCoolantTemp?: number;
   airIntakeTemp?: number;
 }
 
-// Store latest data received from MQTT
 let latestData: VehicleData = {};
+let isEspOnline = false;
+let lastPing = 0;
 
-// List of frontend callbacks to notify when new data arrives
+// === Frontend data callbacks ===
 const dataCallbacks: ((data: VehicleData) => void)[] = [];
+const connectionCallbacks: ((online: boolean) => void)[] = [];
 
-// Connection events
+// === MQTT Connection ===
 client.on("connect", () => {
-  console.log("📡 MQTT Connected!");
+  console.log("📡 MQTT Connected (Frontend)");
 
-  // Subscribe to single topic for all vehicle data
-  client.subscribe("esp32mqtt/vehicle", (err) => {
-    if (!err) {
-      console.log("📡 Subscribed to esp32mqtt/vehicle");
-    } else {
-      console.error("❌ Subscribe error:", err);
-    }
+  // Subscribe to telemetry and handshake topics
+  client.subscribe([TOPIC_VEHICLE, TOPIC_FE_REQ], (err) => {
+    if (err) console.error("❌ Subscription error:", err);
+    else console.log(`📡 Subscribed to ${TOPIC_VEHICLE} & ${TOPIC_FE_REQ}`);
   });
 });
 
+// === Handle Incoming Messages ===
 client.on("message", (topic, message) => {
-  if (topic !== "esp32mqtt/vehicle") return;
+  const msgStr = message.toString();
 
-  try {
-    // Parse JSON message from ESP32
-    const data = JSON.parse(message.toString()) as VehicleData;
+  // 🧩 1️⃣ Handle handshake ping from ESP
+  if (topic === TOPIC_FE_REQ) {
+    try {
+      const payload = JSON.parse(msgStr);
+      if (payload.status === "ping") {
+        // Send ACK
+        client.publish(TOPIC_FE_RES, JSON.stringify({ status: "ack" }));
+        console.log("📤 Sent ACK to ESP (Frontend)");
 
-    // Merge with latest data (in case some fields are missing)
-    latestData = { ...latestData, ...data };
+        // Update ESP online state
+        isEspOnline = true;
+        lastPing = Date.now();
+        connectionCallbacks.forEach((cb) => cb(isEspOnline));
+      }
+    } catch (err) {
+      console.error("❌ Invalid handshake payload:", err);
+    }
+    return;
+  }
 
-    // Notify all subscribers (e.g., UI components)
-    dataCallbacks.forEach((callback) => callback(latestData));
-
-    // Debug log
-    console.log("📨 Received Vehicle Data:", latestData);
-  } catch (err) {
-    console.error("❌ Failed to parse MQTT JSON:", err);
-    console.log("Raw message:", message.toString());
+  // 🧩 2️⃣ Handle telemetry data from ESP
+  if (topic === TOPIC_VEHICLE) {
+    try {
+      const data = JSON.parse(msgStr) as VehicleData;
+      latestData = { ...latestData, ...data };
+      dataCallbacks.forEach((cb) => cb(latestData));
+      console.log("📨 Vehicle Data:", latestData);
+    } catch (err) {
+      console.error("❌ Failed to parse vehicle data:", err);
+      console.log("Raw message:", msgStr);
+    }
   }
 });
 
+// === Handle Connection Errors ===
 client.on("error", (err) => {
   console.error("❌ MQTT Connection error:", err);
 });
 
-// Export helper functions for React components
+// === 3️⃣ Heartbeat monitor (detect when ESP goes silent) ===
+setInterval(() => {
+  if (isEspOnline && Date.now() - lastPing > 10000) {
+    // No ping for 10 seconds -> mark ESP offline
+    isEspOnline = false;
+    console.warn("⚠️ ESP connection lost (no heartbeat)");
+    connectionCallbacks.forEach((cb) => cb(isEspOnline));
+  }
+}, 2000);
+
+// === Public API for React components ===
 export function getLatestData() {
   return latestData;
 }
 
 export function subscribeToData(callback: (data: VehicleData) => void) {
   dataCallbacks.push(callback);
-
-  // Return unsubscribe function for cleanup
   return () => {
-    const index = dataCallbacks.indexOf(callback);
-    if (index > -1) {
-      dataCallbacks.splice(index, 1);
-    }
+    const idx = dataCallbacks.indexOf(callback);
+    if (idx > -1) dataCallbacks.splice(idx, 1);
+  };
+}
+
+// Subscribe to ESP online/offline status
+export function subscribeToConnection(callback: (online: boolean) => void) {
+  connectionCallbacks.push(callback);
+  return () => {
+    const idx = connectionCallbacks.indexOf(callback);
+    if (idx > -1) connectionCallbacks.splice(idx, 1);
   };
 }
