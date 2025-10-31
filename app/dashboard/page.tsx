@@ -74,9 +74,7 @@ export default function Dashboard() {
                 <ParameterCard name="Engine Coolant Temp" value={data.engineCoolantTemp} unit="°C" color="text-cyan-400" link="/dashboard/engine-coolant-temp" />
                 <ParameterCard name="Intake Temp" value={data.airIntakeTemp} unit="°C" color="text-yellow-400" link="/dashboard/air-intake-temp" />
 
-                <ParameterCard name="Battery Voltage?" value={data.maybeVoltage} unit="V" color="text-cyan-400" link="/dashboard/battery-voltage" />
-                <ParameterCard name="Odometer?" value={data.maybeOdo} unit="km" color="text-yellow-400" link="/dashboard/odometer" />
-                <ParameterCard name="Odometer? 2" value={data.maybeOdo1} unit="km" color="text-yellow-400" link="/dashboard/odometer-2" />
+                <ParameterCard name="Odometer" value={data.maybeOdo} unit="km" color="text-yellow-400" link="/dashboard/odometer" />
             </div>
         </div>
     );
