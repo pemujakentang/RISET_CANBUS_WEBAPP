@@ -14,9 +14,7 @@ export default function Dashboard() {
         brake: 0,
         engineCoolantTemp: 0,
         airIntakeTemp: 0,
-        maybeVoltage: 0,
-        maybeOdo: 0,
-        maybeOdo1: 0,
+        odoMeter: 0,
     });
 
     useEffect(() => {
@@ -26,6 +24,8 @@ export default function Dashboard() {
             ...prevData,
             ...initialData
         }));
+
+        // setData(initialData);
 
         // Subscribe to real-time updates
         const unsubscribe = subscribeToData((mqttData) => {
@@ -74,7 +74,7 @@ export default function Dashboard() {
                 <ParameterCard name="Engine Coolant Temp" value={data.engineCoolantTemp} unit="°C" color="text-cyan-400" link="/dashboard/engine-coolant-temp" />
                 <ParameterCard name="Intake Temp" value={data.airIntakeTemp} unit="°C" color="text-yellow-400" link="/dashboard/air-intake-temp" />
 
-                <ParameterCard name="Odometer" value={data.maybeOdo} unit="km" color="text-yellow-400" link="/dashboard/odometer" />
+                <ParameterCard name="Odometer?" value={data.odoMeter} unit="km" color="text-yellow-400" link="/dashboard/odometer" />
             </div>
         </div>
     );

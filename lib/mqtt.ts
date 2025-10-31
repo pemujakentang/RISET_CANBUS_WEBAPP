@@ -1,7 +1,7 @@
 import mqtt from "mqtt";
 
 // === MQTT Connection Configuration ===
-const client = mqtt.connect("mqtt://localhost:1883", {
+const client = mqtt.connect("ws://localhost:9001", {
   username: "WebMonitor",
   password: "WebMonitor",
 });
@@ -13,19 +13,17 @@ const TOPIC_FE_RES = "esp32mqtt/handshake/fe/response";
 
 // === Data Types ===
 export interface VehicleData {
-  rpm?: number;
-  speed?: number;
-  throttle?: number;
-  gear?: number;
-  brake?: number;
-  maybeVoltage?: number;
-  maybeOdo?: number;
-  maybeOdo1?: number;
-  engineCoolantTemp?: number;
-  airIntakeTemp?: number;
+  rpm: number;
+  speed: number;
+  throttle: number;
+  gear: number;
+  brake: number;
+  maybeOdo: number;
+  engineCoolantTemp: number;
+  airIntakeTemp: number;
 }
 
-let latestData: VehicleData = {};
+let latestData: VehicleData;
 let isEspOnline = false;
 let lastPing = 0;
 
