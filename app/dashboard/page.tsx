@@ -62,9 +62,9 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center p-10">
-            <h1 className="text-3xl font-bold mb-8">Vehicle Dashboard</h1>
+            <h1 className="text-3xl font-bold mb-8 text-black">Vehicle Dashboard</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl text-black">
                 <ParameterCard name="RPM (0x1DC)" value={data.rpm} color="text-blue-600" link="/dashboard/rpm" />
                 <ParameterCard name="Speed (0x158)" value={data.speed} unit="km/h" color="text-green-600" link="/dashboard/speed" />
                 <ParameterCard name="Throttle (0x17C)" value={data.throttle} unit="%" color="text-orange-600" link="/dashboard/throttle" />
