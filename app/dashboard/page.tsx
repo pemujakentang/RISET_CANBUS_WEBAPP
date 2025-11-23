@@ -4,14 +4,16 @@ import { useEffect, useState } from "react";
 import ParameterCard from "../components/ParameterCard";
 import { getLatestData, subscribeToData } from "@/lib/mqtt";
 import { GearPosition } from "@/lib/enums/gear";
+import VerticalBar from "../components/VerticalBar";
+import HorizontalBar from "../components/HorizontalBar";
 
 export default function Dashboard() {
     const [data, setData] = useState({
-        rpm: 0,
+        rpm: 2500,
         speed: 0,
-        throttle: 0,
+        throttle: 90,
         gear: 0,
-        brake: 0,
+        brake: 50.54,
         engineCoolantTemp: 0,
         airIntakeTemp: 0,
         odoMeter: 0,
@@ -61,20 +63,30 @@ export default function Dashboard() {
 
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center p-10">
-            <h1 className="text-3xl font-bold mb-8">Vehicle Dashboard</h1>
+        <div className="h-screen bg-gray-800">
+            <div className="flex justify-center p-10 w-full h-[60%] flex-wrap font-7segment">
+                <h1 className="text-4xl font-bold mb-8 w-full text-center font-7segment text-white">Vehicle Dashboard</h1>
+                <div className="w-full h-full flex justify-center gap-6">
+                    <VerticalBar name="Throttle" value={data.throttle} color="#00A551" width={80} />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-                <ParameterCard name="RPM (0x1DC)" value={data.rpm} color="text-blue-600" link="/dashboard/rpm" />
-                <ParameterCard name="Speed (0x158)" value={data.speed} unit="km/h" color="text-green-600" link="/dashboard/speed" />
-                <ParameterCard name="Throttle (0x17C)" value={data.throttle} unit="%" color="text-orange-600" link="/dashboard/throttle" />
-                <ParameterCard name="Gear (0x191)" value={getGearLabel(data.gear)} color="text-purple-600" link="/dashboard/gear" />
-                <ParameterCard name="Brake Pressure (0x1A4)" value={data.brake} unit="%" color="text-red-600" link="/dashboard/brake" />
+                    <div className="w-full flex justify-center flex-wrap gap-6 ">
+                        <div className="w-full flex justify-center">
+                            <HorizontalBar name="RPM" max={5000} value={data.rpm} />
+                        </div>
+                        
+                        <div className="flex justify-center flex-wrap gap-6 w-full">
+                            <ParameterCard name="Odometer" value={data.odoMeter} unit="km" link="/dashboard/odometer" />
+                            <ParameterCard name="Speed" value={data.speed} unit="km/h" link="/dashboard/speed" />
+                            <ParameterCard name="Gear" value={getGearLabel(data.gear)} link="/dashboard/gear" />
 
-                <ParameterCard name="Engine Coolant Temp" value={data.engineCoolantTemp} unit="°C" color="text-cyan-400" link="/dashboard/engine-coolant-temp" />
-                <ParameterCard name="Intake Temp" value={data.airIntakeTemp} unit="°C" color="text-yellow-400" link="/dashboard/air-intake-temp" />
 
-                <ParameterCard name="Odometer?" value={data.odoMeter} unit="km" color="text-yellow-400" link="/dashboard/odometer" />
+                            <ParameterCard name="Engine Coolant Temp" value={data.engineCoolantTemp} unit="°C" link="/dashboard/engine-coolant-temp" />
+                            <ParameterCard name="Intake Temp" value={data.airIntakeTemp} unit="°C" link="/dashboard/air-intake-temp" />
+                        </div>
+                    </div>
+
+                    <VerticalBar name="Brake" value={data.brake} color="#EF1A2D" width={80} />
+                </div>
             </div>
         </div>
     );

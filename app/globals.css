@@ -10,6 +10,14 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-ferro: "Ferro Rosso", sans-serif;
+  --font-metropolis: "Metropolis", sans-serif;
+  --font-powerweld: "Powerweld", sans-serif;
+  --font-dealerplate: "Dealerplate California", sans-serif;
+  --font-transit: "Transit CAT", sans-serif;
+  --font-bitcrusher: "Bitcrusher Condensed", sans-serif;
+  --font-7segment: "7 Segment", sans-serif;
+  --font-whitrabt: "Whitrabt", sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +31,174 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: "Ferro Rosso";
+  src: url("src/fonts/FerroRosso.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* === Metropolis Font Family === */
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-Thin.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-ThinItalic.otf") format("opentype");
+  font-weight: 100;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-ExtraLight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-ExtraLightItalic.otf") format("opentype");
+  font-weight: 200;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-LightItalic.otf") format("opentype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-RegularItalic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-MediumItalic.otf") format("opentype");
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-SemiBoldItalic.otf") format("opentype");
+  font-weight: 600;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-BoldItalic.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-ExtraBoldItalic.otf") format("opentype");
+  font-weight: 800;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Metropolis";
+  src: url("src/fonts/Metropolis/Metropolis-BlackItalic.otf") format("opentype");
+  font-weight: 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Dealerplate California";
+  src: url("src/fonts/dealerplate california.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Powerweld";
+  src: url("src/fonts/Powerweld.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Transit CAT";
+  src: url("src/fonts/Transit CAT.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bitcrusher Condensed";
+  src: url("src/fonts/bitcrusher condensed bd.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "7 Segment";
+  src: url("src/fonts/Seven Segment.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Whitrabt";
+  src: url("src/fonts/whitrabt.ttf") format("truetype");
+  font-display: swap;
 }
