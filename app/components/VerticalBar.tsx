@@ -43,7 +43,7 @@ export default function VerticalBar({
     };
 
     return (
-        <div className="flex flex-col items-center justify-end bg-black text-white p-4 rounded-md shadow-md h-full">
+        <div className="flex flex-col items-center justify-end bg-black text-white p-4 rounded-md shadow-md ">
             <div
                 className="flex flex-col justify-end bg-black overflow-hidden rounded-md"
                 style={{

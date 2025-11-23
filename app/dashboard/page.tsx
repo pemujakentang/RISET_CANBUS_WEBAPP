@@ -6,6 +6,9 @@ import { getLatestData, subscribeToData } from "@/lib/mqtt";
 import { GearPosition } from "@/lib/enums/gear";
 import VerticalBar from "../components/VerticalBar";
 import HorizontalBar from "../components/HorizontalBar";
+import { isTelemetryKey, pushTelemetry, TelemetryKey } from "@/lib/telemetryBuffer";
+import MetricChart from "../components/MetricChart";
+import OdometerHistory from "../components/OdometerHistory";
 
 export default function Dashboard() {
     const [data, setData] = useState({
@@ -35,10 +38,25 @@ export default function Dashboard() {
                 ...prevData,
                 ...mqttData
             }));
+
+            Object.entries(mqttData).forEach(([k, v]) => {
+                if (typeof v === "number" && isTelemetryKey(k)) {
+                    pushTelemetry(k, v);
+                }
+            });
+
         });
 
         return unsubscribe;
     }, []);
+
+    const [selectedMetric, setSelectedMetric] = useState<TelemetryKey | null>(null);
+
+    function handleMetricClick(metric: TelemetryKey) {
+        setSelectedMetric(prev => (prev === metric ? null : metric));
+    }
+
+
 
     function getGearLabel(gearValue: number): string {
         switch (gearValue) {
@@ -63,7 +81,7 @@ export default function Dashboard() {
 
 
     return (
-        <div className="h-screen bg-gray-800">
+        <div className="min-h-screen bg-gray-800">
             <div className="flex justify-center p-10 w-full h-[60%] flex-wrap font-7segment">
                 <h1 className="text-4xl font-bold mb-8 w-full text-center font-7segment text-white">Vehicle Dashboard</h1>
                 <div className="w-full h-full flex justify-center gap-6">
@@ -73,20 +91,31 @@ export default function Dashboard() {
                         <div className="w-full flex justify-center">
                             <HorizontalBar name="RPM" max={5000} value={data.rpm} />
                         </div>
-                        
+
                         <div className="flex justify-center flex-wrap gap-6 w-full">
-                            <ParameterCard name="Odometer" value={data.odoMeter} unit="km" link="/dashboard/odometer" />
-                            <ParameterCard name="Speed" value={data.speed} unit="km/h" link="/dashboard/speed" />
-                            <ParameterCard name="Gear" value={getGearLabel(data.gear)} link="/dashboard/gear" />
+                            <ParameterCard name="Odometer" value={data.odoMeter} unit="km" onClick={() => handleMetricClick("odoMeter")} />
+                            <ParameterCard name="Speed" value={data.speed} unit="km/h" onClick={() => handleMetricClick("speed")} />
+                            <ParameterCard name="Gear" value={getGearLabel(data.gear)} onClick={() => handleMetricClick("gear")} />
 
 
-                            <ParameterCard name="Engine Coolant Temp" value={data.engineCoolantTemp} unit="°C" link="/dashboard/engine-coolant-temp" />
-                            <ParameterCard name="Intake Temp" value={data.airIntakeTemp} unit="°C" link="/dashboard/air-intake-temp" />
+                            <ParameterCard name="Engine Coolant Temp" value={data.engineCoolantTemp} unit="°C" onClick={() => handleMetricClick("engineCoolantTemp")} />
+                            <ParameterCard name="Intake Temp" value={data.airIntakeTemp} unit="°C" onClick={() => handleMetricClick("airIntakeTemp")} />
                         </div>
                     </div>
 
                     <VerticalBar name="Brake" value={data.brake} color="#EF1A2D" width={80} />
                 </div>
+                {selectedMetric && (
+                    <div className="w-full mt-10 bg-gray-900 p-6 rounded-xl shadow-xl">
+                        <MetricChart metric={selectedMetric} />
+                    </div>
+                )}
+
+                {/* TODO: bikin selection vehicleId, ini masih hardcode */}
+                <div className="w-full mt-10 bg-gray-900 p-6 rounded-xl shadow-xl">
+                    <OdometerHistory vehicleId="ESP32" />
+                </div>
+
             </div>
         </div>
     );
