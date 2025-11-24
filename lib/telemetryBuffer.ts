@@ -11,6 +11,7 @@ export type TelemetryKey =
 type Entry = { t: number; value: number };
 
 const MAX_DURATION = 600 * 1000; // keep 10 minutes (ms)
+const SAMPLING_INTERVAL_MS = 1000;
 
 const buffer: Record<TelemetryKey, Entry[]> = {
   rpm: [],
@@ -23,11 +24,27 @@ const buffer: Record<TelemetryKey, Entry[]> = {
   odoMeter: [],
 };
 
+const lastSavedTime: Record<TelemetryKey, number> = {
+  rpm: 0,
+  speed: 0,
+  throttle: 0,
+  gear: 0,
+  brake: 0,
+  engineCoolantTemp: 0,
+  airIntakeTemp: 0,
+  odoMeter: 0,
+};
+
 export function pushTelemetry(key: TelemetryKey, value: number) {
   const now = Date.now();
-  buffer[key].push({ t: now, value });
 
-  // prune older than 10 mins
+  if (now - lastSavedTime[key] < SAMPLING_INTERVAL_MS) {
+    return; // Skip saving this frame
+  }
+
+  buffer[key].push({ t: now, value });
+  lastSavedTime[key] = now; 
+
   buffer[key] = buffer[key].filter((e) => now - e.t <= MAX_DURATION);
 }
 

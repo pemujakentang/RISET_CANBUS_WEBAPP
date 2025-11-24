@@ -10,10 +10,12 @@ type TelemetryPoint = {
 };
 
 const ranges = [
-    { label: "10s", value: 10 },
-    { label: "30s", value: 30 },
-    { label: "60s", value: 60 },
-    { label: "10m", value: 600 },
+    { label: "10s", value: 10 },  // 10 seconds
+    { label: "30s", value: 30 },  // 30 seconds
+    { label: "60s", value: 60 },  // 1 minute
+    { label: "10m", value: 600 }, // 10 minutes (10 * 60)
+    { label: "30m", value: 1800 }, // 30 minutes (30 * 60)
+    { label: "1h", value: 3600 },  // 1 hour (60 * 60)
 ];
 
 export default function MetricChart({ metric }: { metric: TelemetryKey }) {

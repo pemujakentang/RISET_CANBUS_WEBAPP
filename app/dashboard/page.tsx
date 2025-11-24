@@ -56,8 +56,6 @@ export default function Dashboard() {
         setSelectedMetric(prev => (prev === metric ? null : metric));
     }
 
-
-
     function getGearLabel(gearValue: number): string {
         switch (gearValue) {
             case GearPosition.P:
@@ -105,16 +103,17 @@ export default function Dashboard() {
 
                     <VerticalBar name="Brake" value={data.brake} color="#EF1A2D" width={80} />
                 </div>
+                
                 {selectedMetric && (
                     <div className="w-full mt-10 bg-gray-900 p-6 rounded-xl shadow-xl">
-                        <MetricChart metric={selectedMetric} />
+                        {selectedMetric === "odoMeter" ? (
+                            /* TODO: bikin selection vehicleId, ini masih hardcode */ 
+                            <OdometerHistory vehicleId="ESP32" />
+                        ) : (
+                            <MetricChart metric={selectedMetric} />
+                        )}
                     </div>
                 )}
-
-                {/* TODO: bikin selection vehicleId, ini masih hardcode */}
-                <div className="w-full mt-10 bg-gray-900 p-6 rounded-xl shadow-xl">
-                    <OdometerHistory vehicleId="ESP32" />
-                </div>
 
             </div>
         </div>
