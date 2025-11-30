@@ -3,6 +3,7 @@ interface HorizontalBarProps {
     max: number;
     name: string;
     segments?: number; // default 15
+    onClick?: () => void;
 }
 
 export default function HorizontalBar({
@@ -10,6 +11,7 @@ export default function HorizontalBar({
     max,
     name,
     segments = 15,
+    onClick,
 }: HorizontalBarProps) {
 
     // how many LEDs should be lit
@@ -32,7 +34,8 @@ export default function HorizontalBar({
     };
 
     return (
-        <div className="bg-black text-white p-4 rounded-xl shadow-md w-full h-fit">
+        <div className="bg-black text-white p-4 rounded-xl shadow-md w-full h-fit hover:cursor-pointer" 
+        onClick={onClick}>
             {/* <p className="text-xl text-center font-semibold">{name}</p> */}
 
             {/* LED BAR */}

@@ -12,11 +12,11 @@ import OdometerHistory from "../components/OdometerHistory";
 
 export default function Dashboard() {
     const [data, setData] = useState({
-        rpm: 2500,
+        rpm: 0,
         speed: 0,
-        throttle: 90,
+        throttle: 0,
         gear: 0,
-        brake: 50.54,
+        brake: 0,
         engineCoolantTemp: 0,
         airIntakeTemp: 0,
         odoMeter: 0,
@@ -84,11 +84,11 @@ export default function Dashboard() {
             <div className="flex justify-center p-10 w-full h-[60%] flex-wrap font-7segment">
                 <h1 className="text-4xl font-bold mb-8 w-full text-center font-7segment text-white">Vehicle Dashboard</h1>
                 <div className="w-full h-full flex justify-center gap-6">
-                    <VerticalBar name="Throttle" value={data.throttle} color="#00A551" width={80} />
+                    <VerticalBar name="Throttle" value={data.throttle} color="#00A551" width={80} onClick={() => handleMetricClick("throttle")} />
 
                     <div className="w-full flex justify-center flex-wrap gap-6 ">
                         <div className="w-full flex justify-center">
-                            <HorizontalBar name="RPM" max={5000} value={data.rpm} />
+                            <HorizontalBar name="RPM" max={5000} value={data.rpm} onClick={() => handleMetricClick("rpm")} />
                         </div>
 
                         <div className="flex justify-center flex-wrap gap-6 w-full">
@@ -103,7 +103,7 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <VerticalBar name="Brake" value={data.brake} color="#EF1A2D" width={80} />
+                    <VerticalBar name="Brake" value={data.brake} color="#EF1A2D" width={80} onClick={() => handleMetricClick("brake")} />
                 </div>
                 
                 {selectedMetric && (

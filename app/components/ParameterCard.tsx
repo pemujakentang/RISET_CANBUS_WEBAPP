@@ -7,7 +7,6 @@ interface ParameterCardProps {
     value: number | string;
     unit?: string;
     color?: string; // ignored for LCD mode
-    link?: string;
     onClick?: () => void;
 }
 
@@ -15,15 +14,12 @@ export default function ParameterCard({
     name,
     value,
     unit,
-    link,
     onClick,
 }: ParameterCardProps) {
-    const Wrapper = link ? Link : "div";
-    const props = link ? { href: link } : { onClick };
 
     const cardContent = (
         <div
-            onClick={link ? undefined : onClick}>
+            onClick={onClick}>
             <div className="bg-[#0d0d0d] p-4 rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer w-96">
 
                 {/* LCD Screen Container */}
@@ -62,10 +58,6 @@ export default function ParameterCard({
             </div>
         </div>
     )
-
-    if (link) {
-        return <Link href={link}>{cardContent}</Link>;
-    }
 
     return cardContent;
 }

@@ -4,6 +4,7 @@ interface VerticalBarProps {
     color?: string; // base LED color
     width?: number;
     segments?: number; // default 20
+    onClick?: () => void;
 }
 
 export default function VerticalBar({
@@ -12,6 +13,7 @@ export default function VerticalBar({
     color = "#EF1A2D",
     width = 60,
     segments = 20,
+    onClick,
 }: VerticalBarProps) {
 
     // how many LEDs should be ON
@@ -43,7 +45,8 @@ export default function VerticalBar({
     };
 
     return (
-        <div className="flex flex-col items-center justify-end bg-black text-white p-4 rounded-md shadow-md ">
+        <div className="flex flex-col items-center justify-end bg-black text-white p-4 rounded-md shadow-md hover:cursor-pointer"
+            onClick={onClick}>
             <div
                 className="flex flex-col justify-end bg-black overflow-hidden rounded-md"
                 style={{
