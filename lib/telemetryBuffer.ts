@@ -6,7 +6,9 @@ export type TelemetryKey =
   | "brake"
   | "engineCoolantTemp"
   | "airIntakeTemp"
-  | "odoMeter";
+  | "odoMeter"
+  | "steeringAngle"
+  ;
 
 type Entry = { t: number; value: number };
 
@@ -22,6 +24,7 @@ const buffer: Record<TelemetryKey, Entry[]> = {
   engineCoolantTemp: [],
   airIntakeTemp: [],
   odoMeter: [],
+  steeringAngle: [],
 };
 
 const lastSavedTime: Record<TelemetryKey, number> = {
@@ -33,6 +36,7 @@ const lastSavedTime: Record<TelemetryKey, number> = {
   engineCoolantTemp: 0,
   airIntakeTemp: 0,
   odoMeter: 0,
+  steeringAngle: 0,
 };
 
 export function pushTelemetry(key: TelemetryKey, value: number) {
@@ -65,5 +69,6 @@ export function isTelemetryKey(key: string): key is TelemetryKey {
         "engineCoolantTemp",
         "airIntakeTemp",
         "odoMeter",
+        "diffWheelSpeed",
     ].includes(key);
 }

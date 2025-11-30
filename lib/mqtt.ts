@@ -21,6 +21,7 @@ export interface VehicleData {
   maybeOdo: number;
   engineCoolantTemp: number;
   airIntakeTemp: number;
+  steeringAngle: number;
 }
 
 let latestData: VehicleData;

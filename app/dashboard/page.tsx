@@ -20,6 +20,7 @@ export default function Dashboard() {
         engineCoolantTemp: 0,
         airIntakeTemp: 0,
         odoMeter: 0,
+        steeringAngle: 0,
     });
 
     useEffect(() => {
@@ -98,6 +99,7 @@ export default function Dashboard() {
 
                             <ParameterCard name="Engine Coolant Temp" value={data.engineCoolantTemp} unit="°C" onClick={() => handleMetricClick("engineCoolantTemp")} />
                             <ParameterCard name="Intake Temp" value={data.airIntakeTemp} unit="°C" onClick={() => handleMetricClick("airIntakeTemp")} />
+                            <ParameterCard name="Steering Angle" value={data.steeringAngle} unit="units" onClick={() => handleMetricClick("steeringAngle")} />
                         </div>
                     </div>
 
