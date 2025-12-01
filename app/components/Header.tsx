@@ -2,10 +2,10 @@ import Link from "next/link";
 
 export default function Header() {
     return (
-        <header className="bg-[#EF1A2D] border-b-4 border-[#FFF200] text-white">
+        <header className="bg-[#c5c5c5] border-b-6 border-[#afafaf] text-black">
             <div className="flex justify-between items-center px-6 py-2">
                 {/* Title */}
-                <h1 className="text-3xl font-ferro tracking-wide drop-shadow-[3px_3px_0_#000000]">
+                <h1 className="text-4xl text-white font-ferro tracking-wide drop-shadow-[3px_3px_0_#000000]">
                     Vehicle Dashboard
                 </h1>
 
@@ -14,7 +14,7 @@ export default function Header() {
                     <Link
                         href="/"
                         className="
-                        font-transit text-lg text-black
+                        font-7segment font-extrabold text-xl text-black
                         px-4 py-1 rounded-md
                         bg-white
                         transition-all duration-200
@@ -28,7 +28,7 @@ export default function Header() {
                     <Link
                         href="/upload"
                         className="
-                        font-transit text-lg text-black
+                        font-7segment font-extrabold text-xl text-black
                         px-4 py-1 rounded-md
                         bg-white
                         transition-all duration-200
@@ -41,7 +41,7 @@ export default function Header() {
 
                     <select
                         className="
-                        bg-white text-black font-transit
+                        bg-white text-black font-7segment font-extrabold text-xl
                         rounded-md px-3 py-1.5
                         border border-gray-300
                         shadow-[2px_2px_0_#000]

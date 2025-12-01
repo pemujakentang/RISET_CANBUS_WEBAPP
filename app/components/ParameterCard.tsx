@@ -20,32 +20,30 @@ export default function ParameterCard({
     const cardContent = (
         <div
             onClick={onClick}>
-            <div className="bg-[#0d0d0d] p-4 rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer w-96">
+            <div className="bg-white p-2 rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer w-96">
 
-                {/* LCD Screen Container */}
                 <div
                     className="
-                        bg-[#b8ff9b] 
-                        text-[#003300]
+                        bg-[#ebebeb]
+                        text-[#000000]
                         rounded-md 
                         p-4 
                         shadow-inner 
-                        border-2 border-[#6ca86c]
+                        border-2 border-white
                         tracking-wider 
                         font-7segment
                         relative
                     "
                     style={{
                         boxShadow:
-                            "inset 0 0 10px #5fa35f, 0 0 10px rgba(0,255,0,0.2)",
+                            "inset 0 0 10px #969696, 0 0 10px rgba(255,255,255,0.2)",
                     }}
                 >
-                    {/* Optional subtle grid */}
                     <div className="absolute inset-0 opacity-20 pointer-events-none"
                         style={{
                             backgroundSize: "6px 6px",
                             backgroundImage:
-                                "linear-gradient(#00000012 1px, transparent 1px), linear-gradient(90deg, #00000012 1px, transparent 1px)",
+                                "linear-gradient(#00000018 2px, transparent 2px), linear-gradient(90deg, #00000018 2px, transparent 2px)",
                         }}
                     />
 

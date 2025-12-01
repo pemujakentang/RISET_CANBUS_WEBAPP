@@ -9,11 +9,10 @@ import {
     Title,
     Tooltip,
     Legend,
-    TimeScale, // ⭐️ TimeScale is essential for chronological data
+    TimeScale,
 } from 'chart.js';
-import 'chartjs-adapter-date-fns'; // ⭐️ Import the adapter
+import 'chartjs-adapter-date-fns';
 
-// Register the necessary components for Chart.js
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -38,37 +37,36 @@ type OdometerChartProps = {
 
 export default function OdometerChart({ data, metric }: OdometerChartProps) {
 
-    // Transform the data to the format Chart.js Time Scale expects: {x: timestamp, y: value}
     const chartData = data.map(d => ({
         x: d.bucket.$date,
         y: d.odo,
     }));
 
-    // Data object for react-chartjs-2
     const chartDataObject = {
         datasets: [
             {
                 label: 'Odometer (km)',
                 data: chartData,
-                borderColor: '#00ff66',
-                backgroundColor: 'rgba(0, 255, 102, 0.1)',
+                borderColor: '#00000',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 pointBorderColor: '#ffffff',
-                pointRadius: 1, // No dots for high-density data
-                tension: 0.2, // Smooth the line
+                pointRadius: 1,
+                tension: 0.2,
             },
         ],
     };
 
-    // Chart Options
     const options = {
         responsive: true,
         maintainAspectRatio: false,
+        animation: {
+            duration: 0,
+        },
         scales: {
-            // ⭐️ Configure the Time Scale for the X-axis
             x: {
                 type: 'time' as const,
                 time: {
-                    unit: 'hour' as const, // Default unit, will adjust dynamically
+                    unit: 'hour' as const,
                     tooltipFormat: 'MMM d, HH:mm',
                     displayFormats: {
                         hour: 'MMM d, HH:mm',
@@ -76,30 +74,25 @@ export default function OdometerChart({ data, metric }: OdometerChartProps) {
                     },
                 },
                 ticks: {
-                    color: '#aaa',
+                    color: '#000',
                 },
                 title: {
                     display: true,
                     text: 'Time',
-                    color: '#fff',
+                    color: '#000',
                 },
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)',
-                }
+                grid: { color: 'rgba(0, 0, 0, 0.2)' }
             },
-            // Configure the Linear Scale for the Y-axis
             y: {
                 ticks: {
-                    color: '#aaa',
+                    color: '#000',
                 },
                 title: {
                     display: true,
                     text: 'Odometer (km)',
-                    color: '#fff',
+                    color: '#000',
                 },
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)',
-                }
+                grid: { color: 'rgba(0, 0, 0, 0.2)' }
             },
         },
         plugins: {
@@ -107,16 +100,26 @@ export default function OdometerChart({ data, metric }: OdometerChartProps) {
                 display: false,
             },
             title: {
-                display: true,
+                display: false,
                 text: 'Odometer History',
-                color: '#fff',
+                color: '#000',
             }
-        }
+        },
     };
 
     return (
-        <div className="w-full h-[300px] bg-black p-4 rounded-xl shadow-md">
-            {/* The Line component from react-chartjs-2 */}
+        <div className="w-full h-[300px] bg-[#e6e6e6] p-4 rounded-xl relative"
+            style={{
+                boxShadow:
+                    "inset 0 0 10px #969696, 0 0 10px rgba(255,255,255,0.2)",
+            }}>
+            <div className="absolute inset-0 opacity-20 pointer-events-none"
+                style={{
+                    backgroundSize: "10px 10px",
+                    backgroundImage:
+                        "linear-gradient(#00000020 1px, transparent 1px), linear-gradient(90deg, #00000020 1px, transparent 1px)",
+                }}
+            />
             <Line data={chartDataObject} options={options} />
         </div>
     );

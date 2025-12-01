@@ -9,12 +9,10 @@ type OdometerRecord = {
     };
 };
 
-// ⭐️ DEFINE YOUR NEW TIME RANGE OPTIONS
 const TIME_RANGES = ["1h", "24h", "7d", "30d", "1y", "ytd"];
 
 export default function OdometerHistory({ vehicleId }: { vehicleId: string }) {
     const [range, setRange] = useState("1h");
-    // State structure for Chart.js labels/datasets is simpler with the raw object array
     const [data, setData] = useState<OdometerRecord[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -24,13 +22,9 @@ export default function OdometerHistory({ vehicleId }: { vehicleId: string }) {
             setLoading(true);
             setError(null);
             try {
-                // The result is the array of { bucket, odo } objects
                 const result: OdometerRecord[] = await getOdometerHistory(vehicleId, range);
                 console.log("Fetched odometer data:", result);
 
-                // ⭐️ FIX: No need to map to {t, value} format, Chart.js can use the raw objects
-                // We ensure the timestamp is a Date object on the frontend for Chart.js's Time scale.
-                // However, since Chart.js Adapter handles ISO strings, we can feed it directly.
                 setData(result);
             } catch (err) {
                 console.error(err);
@@ -43,16 +37,18 @@ export default function OdometerHistory({ vehicleId }: { vehicleId: string }) {
     }, [vehicleId, range]);
 
     return (
-        <div className="mt-8">
-            <h2 className="text-xl font-bold text-white mb-2">Odometer History</h2>
+        <div className="">
+            <h2 className="text-2xl font-extrabold text-black mb-4">Odometer History</h2>
 
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-3 mb-4">
                 {TIME_RANGES.map((r) => (
                     <button
                         key={r}
                         onClick={() => setRange(r)}
-                        className={`px-3 py-1 rounded ${range === r ? "bg-green-500" : "bg-gray-700"}`}
-                    >
+                        className={`px-4 py-2 rounded-md ${range === r
+                            ? "bg-gray-700 text-white font-bold"
+                            : "bg-[#cacaca] text-black"
+                            }`}                    >
                         {r}
                     </button>
                 ))}

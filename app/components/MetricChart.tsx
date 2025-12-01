@@ -33,7 +33,7 @@ export default function MetricChart({ metric }: { metric: TelemetryKey }) {
 
     return (
         <div>
-            <h2 className="text-2xl font-bold mb-4 capitalize text-white">
+            <h2 className="text-2xl font-extrabold mb-4 capitalize text-black">
                 {metric} History
             </h2>
 
@@ -43,8 +43,8 @@ export default function MetricChart({ metric }: { metric: TelemetryKey }) {
                         key={r.value}
                         onClick={() => setRange(r.value)}
                         className={`px-4 py-2 rounded-md ${range === r.value
-                                ? "bg-green-500 text-black"
-                                : "bg-gray-700 text-white"
+                            ? "bg-gray-700 text-white font-bold"
+                            : "bg-[#cacaca] text-black"
                             }`}
                     >
                         {r.label}

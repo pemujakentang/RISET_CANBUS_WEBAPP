@@ -25,22 +25,21 @@ export default function HorizontalBar({
         if (ratio < 0.5) {
             // green → yellow
             const t = ratio / 0.5;
-            return `rgb(${Math.round(0 + t * 255)}, 255, 0)`; // 0,255,0 → 255,255,0
+            return `rgb(${Math.round(0 + t * 230)}, 230, 0)`; // 0,230,0 → 230,230,0
         } else {
             // yellow → red
             const t = (ratio - 0.5) / 0.5;
-            return `rgb(255, ${Math.round(255 - t * 255)}, 0)`; // 255,255,0 → 255,0,0
+            return `rgb(230, ${Math.round(230 - t * 230)}, 0)`; // 230,230,0 → 230,0,0
         }
     };
 
     return (
-        <div className="bg-black text-white p-4 rounded-xl shadow-md w-full h-fit hover:cursor-pointer" 
+        <div className="bg-white text-black p-4 rounded-xl shadow-md w-full h-fit hover:cursor-pointer hover:shadow-lg transition-all" 
         onClick={onClick}>
-            {/* <p className="text-xl text-center font-semibold">{name}</p> */}
 
             {/* LED BAR */}
-            <div className="flex items-center gap-[3px] bg-black p-1 rounded-md"
-                style={{ border: "2px solid #111", boxShadow: "0 0 6px #000 inset" }}>
+            <div className="flex items-center gap-[3px] bg-[#ebebeb] p-1.25 rounded-md"
+                style={{ border: "2px solid #111", boxShadow: "0 0 6px #111 inset" }}>
 
                 {[...Array(segments)].map((_, i) => {
                     const isOn = i < activeCount;
@@ -53,7 +52,7 @@ export default function HorizontalBar({
                             style={{
                                 backgroundColor: isOn ? color : "#222",
                                 boxShadow: isOn
-                                    ? `0 0 8px ${color}`
+                                    ? `0 0 5px ${color}`
                                     : "inset 0 0 4px #000",
                                 transition: "all 0.2s ease",
                             }}

@@ -12,11 +12,11 @@ import OdometerHistory from "../components/OdometerHistory";
 
 export default function Dashboard() {
     const [data, setData] = useState({
-        rpm: 0,
+        rpm: 4500,
         speed: 0,
-        throttle: 0,
+        throttle: 50,
         gear: 0,
-        brake: 0,
+        brake: 100,
         engineCoolantTemp: 0,
         airIntakeTemp: 0,
         odoMeter: 0,
@@ -80,9 +80,10 @@ export default function Dashboard() {
 
 
     return (
-        <div className="min-h-screen bg-gray-800">
+        <div className="min-h-screen bg-[#e6e6e6]">
             <div className="flex justify-center p-10 w-full h-[60%] flex-wrap font-7segment">
-                <h1 className="text-4xl font-bold mb-8 w-full text-center font-7segment text-white">Vehicle Dashboard</h1>
+                {/* TODO: ganti nama mobil sesuai data vehicle */}
+                <h1 className="text-5xl font-extrabold mb-8 w-full text-center font-7segment text-black">HONDA BR-V (2017)</h1>
                 <div className="w-full h-full flex justify-center gap-6">
                     <VerticalBar name="Throttle" value={data.throttle} color="#00A551" width={80} onClick={() => handleMetricClick("throttle")} />
 
@@ -107,7 +108,7 @@ export default function Dashboard() {
                 </div>
                 
                 {selectedMetric && (
-                    <div className="w-full mt-10 bg-gray-900 p-6 rounded-xl shadow-xl">
+                    <div className="w-full mt-10 bg-white p-6 rounded-xl shadow-xl">
                         {selectedMetric === "odoMeter" ? (
                             /* TODO: bikin selection vehicleId, ini masih hardcode */ 
                             <OdometerHistory vehicleId="ESP32" />

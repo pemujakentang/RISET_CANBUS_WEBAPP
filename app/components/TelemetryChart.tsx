@@ -13,7 +13,6 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-date-fns'; // Time series adapter
 
-// Register the necessary components for Chart.js
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -26,7 +25,6 @@ ChartJS.register(
 );
 
 type TelemetryPoint = {
-    // Note: 't' is milliseconds since epoch, coming from your telemetry buffer
     t: number;
     value: number;
 };
@@ -38,8 +36,6 @@ type TelemetryChartProps = {
 
 export default function TelemetryChart({ data, metric }: TelemetryChartProps) {
 
-    // Transform the data to the format Chart.js Time Scale expects: {x: timestamp, y: value}
-    // We use the raw 't' (timestamp in ms) for the x-axis.
     const chartData = data.map(d => ({
         x: d.t,
         y: d.value,
@@ -53,7 +49,7 @@ export default function TelemetryChart({ data, metric }: TelemetryChartProps) {
                 borderColor: '#00ff66',
                 backgroundColor: 'rgba(0, 255, 102, 0.1)',
                 pointRadius: 0,
-                pointHitRadius: 2, // For easier tooltip triggering
+                pointHitRadius: 2,
                 tension: 0.2,
             },
         ],
@@ -62,39 +58,50 @@ export default function TelemetryChart({ data, metric }: TelemetryChartProps) {
     const options = {
         responsive: true,
         maintainAspectRatio: false,
+        animation: {
+            duration: 0,
+        },
         scales: {
-            // Configure the Time Scale for the X-axis
             x: {
                 type: 'time' as const,
                 time: {
-                    unit: 'second' as const, // Default to seconds for short ranges
+                    unit: 'second' as const,
                     tooltipFormat: 'HH:mm:ss',
                     displayFormats: {
                         second: 'HH:mm:ss',
                         minute: 'HH:mm',
                     },
                 },
-                ticks: { color: '#aaa' },
-                title: { display: true, text: 'Time (Live)', color: '#fff' },
-                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                ticks: { color: '#000' },
+                title: { display: true, text: 'Time (Live)', color: '#000' },
+                grid: { color: 'rgba(0, 0, 0, 0.2)' }
             },
-            // Configure the Linear Scale for the Y-axis
             y: {
-                ticks: { color: '#aaa' },
-                title: { display: true, text: metric.toUpperCase(), color: '#fff' },
-                grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                // Optional: Force zero baseline for metrics like speed/throttle
+                ticks: { color: '#000' },
+                title: { display: true, text: metric.toUpperCase(), color: '#000' },
+                grid: { color: 'rgba(0, 0, 0, 0.2)' },
                 beginAtZero: true,
             },
         },
         plugins: {
             legend: { display: false },
-            title: { display: true, text: `${metric.toUpperCase()} History`, color: '#fff' }
+            title: { display: false, text: `${metric.toUpperCase()} History`, color: '#000' }
         }
     };
 
     return (
-        <div className="w-full h-[300px] bg-black p-4 rounded-xl shadow-md">
+        <div className="w-full h-[300px] bg-[#e6e6e6] p-4 rounded-xl shadow-md text-black relative"
+            style={{
+                boxShadow:
+                    "inset 0 0 10px #969696, 0 0 10px rgba(255,255,255,0.2)",
+            }}>
+            <div className="absolute inset-0 opacity-20 pointer-events-none"
+                style={{
+                    backgroundSize: "10px 10px",
+                    backgroundImage:
+                        "linear-gradient(#00000020 1px, transparent 1px), linear-gradient(90deg, #00000020 1px, transparent 1px)",
+                }}
+            />
             <Line data={chartDataObject} options={options} />
         </div>
     );

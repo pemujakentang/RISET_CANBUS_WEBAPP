@@ -16,10 +16,8 @@ export default function VerticalBar({
     onClick,
 }: VerticalBarProps) {
 
-    // how many LEDs should be ON
     const activeCount = Math.round((value / 100) * segments);
 
-    // convert hex to RGB
     const hexToRgb = (hex: string) => {
         const clean = hex.replace("#", "");
         const bigint = parseInt(clean, 16);
@@ -32,29 +30,27 @@ export default function VerticalBar({
 
     const base = hexToRgb(color);
 
-    // progressively brighter/blended tones
     const getTone = (index: number) => {
         const t = (segments - index) / segments;
 
-        // slight darkening at lower segments, full color at top
-        const r = Math.round(base.r * (0.8 + t * 0.6));
-        const g = Math.round(base.g * (0.8 + t * 0.6));
-        const b = Math.round(base.b * (0.8 + t * 0.6));
+        const r = Math.round(base.r * (0.7 + t * 0.5));
+        const g = Math.round(base.g * (0.7 + t * 0.5));
+        const b = Math.round(base.b * (0.7 + t * 0.5));
 
         return `rgb(${r}, ${g}, ${b})`;
     };
 
     return (
-        <div className="flex flex-col items-center justify-end bg-black text-white p-4 rounded-md shadow-md hover:cursor-pointer"
+        <div className="flex flex-col items-center justify-end bg-white text-black p-4 rounded-md shadow-md hover:cursor-pointer"
             onClick={onClick}>
             <div
-                className="flex flex-col justify-end bg-black overflow-hidden rounded-md"
+                className="flex flex-col justify-end bg-[#ebebeb] overflow-hidden rounded-md"
                 style={{
                     width: width,
                     height: "100%",
                     padding: "4px",
                     border: "2px solid #111",
-                    boxShadow: "0 0 6px #000 inset",
+                    boxShadow: "0 0 6px #111 inset",
                 }}
             >
                 {[...Array(segments)].map((_, i) => {
